@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: demo4-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+    container_name: demo4-backend
+    ports:
+      - "8081:8080"
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/corporate_banking
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:
