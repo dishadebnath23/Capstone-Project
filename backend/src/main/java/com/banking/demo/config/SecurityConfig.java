@@ -21,26 +21,9 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-    // =========================
-    // 1️⃣ ACTUATOR — COMPLETELY OPEN
-    // =========================
     @Bean
-    @Order(1)
-    public SecurityFilterChain actuatorSecurityChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/actuator/**")
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .csrf(csrf -> csrf.disable());
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.build();
-    }
-
-    // =========================
-    // 2️⃣ API — JWT PROTECTED
-    // =========================
-    @Bean
-    @Order(2)
-    public SecurityFilterChain apiSecurityChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
@@ -51,7 +34,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                // 🔐 JWT FILTER APPLIED ONLY HERE
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
