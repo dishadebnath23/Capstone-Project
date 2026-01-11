@@ -15,6 +15,14 @@ pipeline {
             }
         }
 
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 dir('backend') {
@@ -22,21 +30,14 @@ pipeline {
                 }
             }
         }
+    }
 
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    sh 'mvn clean package'
-                }
-            }
+    post {
+        success {
+            echo '✅ Build & Tests successful'
         }
-
-        stage('Build Docker Image') {
-            steps {
-                dir('backend') {
-                    sh 'docker build -t corporate-banking-backend:latest .'
-                }
-            }
+        failure {
+            echo '❌ Build or Tests failed'
         }
     }
 }
