@@ -22,14 +22,12 @@ server:
   port: 8080
 
 management:
-  server:
-    port: 8082
+  security:
+    enabled: false
   endpoints:
     web:
       exposure:
         include: health
-  endpoint:
-    health:
-      enabled: true
+
 
 
