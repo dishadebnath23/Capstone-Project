@@ -46,7 +46,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register").hasRole("ADMIN")
 
                         // Allow actuator health check (FOR AWS / Jenkins)
-                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+
 
                         // Logged-in user info
                         .requestMatchers("/api/users/me").authenticated()
