@@ -1,24 +1,31 @@
 package com.banking.demo.service;
 
 import com.banking.demo.dto.ClientCreateRequest;
+import com.banking.demo.kafka.KafkaEventProducer;
 import com.banking.demo.model.Client;
 import com.banking.demo.model.PrimaryContact;
 import com.banking.demo.repository.ClientRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.banking.demo.kafka.producer.BankingEventProducer;
 
 import java.util.List;
 import com.banking.demo.exception.ResourceNotFoundException;
-import com.banking.demo.exception.BadRequestException;
 
 @Service
 public class ClientService {
 
     private final ClientRepository clientRepo;
+    private final KafkaEventProducer kafkaEventProducer;
 
-    public ClientService(ClientRepository clientRepo) {
+    public ClientService(
+            ClientRepository clientRepo,
+            KafkaEventProducer kafkaEventProducer
+    ) {
         this.clientRepo = clientRepo;
+        this.kafkaEventProducer = kafkaEventProducer;
     }
+
 
     // ---------------- CREATE CLIENT (RM ONLY) ----------------
     public Client createClient(ClientCreateRequest request) {
@@ -42,10 +49,17 @@ public class ClientService {
         client.setPrimaryContact(contact);
         client.setRmUsername(rmUsername);
 
-        return clientRepo.save(client);
-    }
+        Client savedClient = clientRepo.save(client);
 
-    // ---------------- GET OWN CLIENTS (RM ONLY) ----------------
+// 🔔 Kafka event
+        kafkaEventProducer.send(
+                "CLIENT_CREATED : " + savedClient.getId()
+        );
+
+        return savedClient;
+
+    }
+        // ---------------- GET OWN CLIENTS (RM ONLY) ----------------
     public List<Client> getMyClients() {
 
         String rmUsername = SecurityContextHolder.getContext()
