@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk17'
         maven 'maven'
     }
 
@@ -15,18 +14,18 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
+        stage('Build & Test Backend') {
             steps {
                 dir('backend') {
-                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn clean verify'
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Build Docker Image') {
             steps {
                 dir('backend') {
-                    sh 'mvn test'
+                    sh 'docker build -t corporate-banking-backend:latest .'
                 }
             }
         }
@@ -34,10 +33,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build & Tests successful'
-        }
-        failure {
-            echo '❌ Build or Tests failed'
+            echo '✅ Backend build, tests & Docker image created successfully'
         }
     }
 }
