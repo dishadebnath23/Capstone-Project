@@ -22,7 +22,7 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-    // 🔐 ACTUATOR SECURITY (ORDER 1)
+    // 🔐 ACTUATOR SECURITY — ALONE
     @Bean
     @Order(1)
     public SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
@@ -30,10 +30,11 @@ public class SecurityConfig {
                 .securityMatcher(EndpointRequest.toAnyEndpoint())
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 
-    // 🔐 APPLICATION SECURITY (ORDER 2)
+    // 🔐 APPLICATION SECURITY — NO actuator references
     @Bean
     @Order(2)
     public SecurityFilterChain appSecurity(HttpSecurity http) throws Exception {
@@ -43,12 +44,10 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/register").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
