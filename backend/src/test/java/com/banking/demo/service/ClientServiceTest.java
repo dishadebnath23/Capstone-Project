@@ -2,6 +2,7 @@ package com.banking.demo.service;
 
 import com.banking.demo.dto.ClientCreateRequest;
 import com.banking.demo.exception.ResourceNotFoundException;
+import com.banking.demo.kafka.KafkaEventProducer;
 import com.banking.demo.model.Client;
 import com.banking.demo.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class ClientServiceTest {
     @Mock
     private Authentication authentication;
 
+    @Mock
+    private KafkaEventProducer kafkaEventProducer;
+
     @InjectMocks
     private ClientService clientService;
 
@@ -43,7 +47,7 @@ class ClientServiceTest {
     // ================= TEST 1 =================
     @Test
     void shouldCreateClientAndSetRmUsername() {
-
+        doNothing().when(kafkaEventProducer).send(anyString());
         mockLoggedInUser("rm_user");
 
         ClientCreateRequest request = new ClientCreateRequest();

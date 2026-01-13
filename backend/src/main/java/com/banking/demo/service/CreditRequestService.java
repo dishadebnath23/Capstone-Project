@@ -83,7 +83,7 @@ public class CreditRequestService {
                         new ResourceNotFoundException("Credit request not found")
                 );
 
-        // ✅ IMPORTANT BUSINESS RULE (missing earlier)
+        //  IMPORTANT BUSINESS RULE (missing earlier)
         if (cr.getStatus() != CreditRequestStatus.PENDING) {
             throw new BadRequestException(
                     "Only pending credit requests can be reviewed"
