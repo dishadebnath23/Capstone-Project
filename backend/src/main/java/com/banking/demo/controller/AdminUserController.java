@@ -38,14 +38,7 @@ public class AdminUserController {
         return userService.updateUserStatus(id, active);
     }
 
-    // EDIT user (email / role)
-    @PutMapping("/{id}")
-    public UserResponseDto updateUser(
-            @PathVariable String id,
-            @RequestBody UpdateUserRequest request
-    ) {
-        return userService.updateUser(id, request);
-    }
+  
 
 
 }

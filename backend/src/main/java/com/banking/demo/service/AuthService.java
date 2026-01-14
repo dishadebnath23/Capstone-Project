@@ -3,6 +3,7 @@ package com.banking.demo.service;
 import com.banking.demo.config.JwtUtil;
 import com.banking.demo.dto.LoginRequest;
 import com.banking.demo.dto.LoginResponse;
+import com.banking.demo.dto.RegisterRequest;
 import com.banking.demo.model.User;
 import com.banking.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +37,16 @@ public class AuthService {
         );
 
         return new LoginResponse(token, user.getUsername(), user.getRole().name());
+    }
+
+    public User register(RegisterRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(encoder.encode(request.getPassword()));
+        user.setRole(User.Role.valueOf(request.getRole()));
+        user.setActive(true);
+
+        return userRepo.save(user);
     }
 }
